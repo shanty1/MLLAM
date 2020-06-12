@@ -56,7 +56,6 @@ def train_model(dataloaders, model, criterion, optimizer, scheduler, num_epochs,
                 # statistics
                 data_size += inputs.size(0)
                 running_loss += loss.item() * inputs.size(0)  # 本次Iterate*样本数=本次的总样本loss（防止最后一个batch大小不同，或train与val的不同）
-
             if phase == 'train':
                 scheduler.step()
   
@@ -67,7 +66,8 @@ def train_model(dataloaders, model, criterion, optimizer, scheduler, num_epochs,
                 if first:
                     print('\nEpoch {}/{}\n{}'.format(epoch, num_epochs, '-' * 10))
                     first = False
-                print('{:5s} Loss: {:.4f} LR: {:.4f}'.format(phase, epoch_loss, optimizer.param_groups[0]['lr']))  # 一个epoch更新
+                print('{:5s} Loss: {:.4f} LR: {:.4f} data_size：{}'.format(
+                    phase, epoch_loss, optimizer.param_groups[0]['lr'], data_size))  # 一个epoch更新
             
             # deep copy the model
             if phase == 'val' and epoch_loss < best_loss:
@@ -83,7 +83,8 @@ def train_model(dataloaders, model, criterion, optimizer, scheduler, num_epochs,
                     if first:
                         print('\nEpoch {}/{}\n{}'.format(epoch, num_epochs, '-' * 10))
                         first = False
-                    print('{:5s} Loss: {:.4f} LR: {:.4f}'.format(phase, epoch_loss, optimizer.param_groups[0]['lr']))
+                    print('{:5s} Loss: {:.4f} LR: {:.4f} data_size：{}'.format(
+                        phase, epoch_loss, optimizer.param_groups[0]['lr'], data_size))
             # 每次epoch下的train/val结束
 
         # 每次epoch结束
@@ -115,7 +116,8 @@ loss_function_mse = torch.nn.MSELoss()  # 最小均方误差
 
 if __name__ == "__main__":
     plt.ion()   # interactive mode
-    dataloaders = data_loader.get_dataloaders_train_val(args.batch_size)
+    dataloaders = data_loader.get_dataloaders_train_val(
+        args.batch_size_train, args.batch_size_val)
     model_self = net_multiple.to(device)
     optimizer = torch.optim.SGD(model_self.parameters(), lr=args.lr)
     lr_scheduler = lr_scheduler.CosineAnnealingLR(optimizer, T_max=T_MAX)

@@ -31,5 +31,8 @@ def load_test_data(batch_size):
     return get_loader(batch_size,data_read("test"))
 
 
-def get_dataloaders_train_val(batch_size):
-    return {x: get_loader(batch_size,x) for x in ['train', 'val']}
+def get_dataloaders_train_val(batch_size_for_train, batch_size_for_val):
+    return {
+            'train': get_loader(batch_size_for_train,'train'),
+            'val': get_loader(batch_size_for_val, 'val')
+    }
