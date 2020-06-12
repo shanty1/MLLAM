@@ -12,9 +12,10 @@ device = config.device
 # 定义神经网络
 simple_net = model.SingleNet(args.n_input, args.n_hidden, args.n_output)
 multipleNet = model.MultipleNet(args.n_input, args.n_hiddens, args.n_output)
-net = simple_net
+net = multipleNet
 
-net.load_state_dict(torch.load('./ckpt/model735000.ckpt'))
+net.load_state_dict(torch.load('./model999000.ckpt',
+                               map_location=torch.device('cpu')))
 net = net.to(device)
  
 # Loss函数

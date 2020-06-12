@@ -12,6 +12,7 @@ parser.add_argument('--n_hiddens', type=list, default=[100, 200, 50], help='numb
 parser.add_argument('--lr', type=float, default=0.01, help='learning rate')
 parser.add_argument('--num_epochs', type=int, default=1000000, help='num_epochs')
 parser.add_argument('--batch_size', type=int, default=70, help='batch_size')
-parser.add_argument('--save_epoch', type=int, default=1000, help='batch_size')
+parser.add_argument('--save_epoch', type=int, default=3, help='batch_size')
+parser.add_argument('--show_each_epoch', type=bool,default=True, help='batch_size')
 
 args = parser.parse_args()

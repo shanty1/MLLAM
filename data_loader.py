@@ -21,10 +21,15 @@ def data_read(name="train"):
 def get_loader(batch_size,name="train"):
     """Returns torch.utils.data.DataLoader for custom coco dataset."""
     torch_dataset = torch.utils.data.TensorDataset(*data_read(name))
-    data_loader = torch.utils.data.DataLoader(dataset=torch_dataset, batch_size=batch_size, shuffle=True)
+    data_loader = torch.utils.data.DataLoader(
+        dataset=torch_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
     return data_loader
 
 def load_train_data(batch_size):
     return get_loader(batch_size,data_read("train"))
 def load_test_data(batch_size):
     return get_loader(batch_size,data_read("test"))
+
+
+def get_dataloaders_train_val(batch_size):
+    return {x: get_loader(batch_size,x) for x in ['train', 'val']}
