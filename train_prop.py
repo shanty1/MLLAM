@@ -71,12 +71,13 @@ def train_model(dataloaders, model, criterion, optimizer, scheduler, num_epochs,
             if phase == 'val' and epoch_loss < best_loss:
                 best_loss = epoch_loss
                 best_model_wts = copy.deepcopy(model.state_dict())
-                torch.save(model_self, os.path.join(os.path.dirname(__file__), 'pth/best/{}{}.pkl'.format(save_name，epoch)))
+                torch.save( model, './pkl/props/best/{}.pkl'.format(save_name))
+
             
             if (epoch) % save_epoch == 0:
                 # 保存模型，此处判断保证保存一次，并且展示的loss是val的
                 if phase == 'val':
-                    torch.save( model.state_dict(), './pth/{}{}-valLoss-{}.pth'.format(epoch,save_name, epoch_loss))
+                    torch.save( model, './pkl/props/{}{}-valLoss-{}.pkl'.format(epoch,save_name, epoch_loss))
                 if not args.show_each_epoch:
                     if first:
                         print('\nEpoch {}/{}\n{}'.format(epoch, num_epochs, '-' * 10))

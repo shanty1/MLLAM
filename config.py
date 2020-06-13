@@ -1,7 +1,7 @@
 import argparse
 import torch
 
-color=['black', 'r', 'olivedrab', 'lawngreen', 'sage', 'limegreen', 'royalblue', 'darkviolet', 'crimson', 'sandybrown', 'gold', 'pink', 'slateblue', 'goldenrod', 'aqua']
+color=['black', 'r', 'olivedrab', 'lawngreen', 'yellow', 'limegreen', 'royalblue', 'darkviolet', 'crimson', 'sandybrown', 'gold', 'pink', 'slateblue', 'goldenrod', 'aqua']
 
 # Device configuration
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
