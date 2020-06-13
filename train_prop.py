@@ -34,10 +34,8 @@ def train_model(dataloaders, model, criterion, optimizer, scheduler, num_epochs,
             data_size = 0
             # Iterate over data.
             for inputs, labels in dataloaders[phase]:
-                # 逆向训练
-                temp = inputs
-                inputs = labels.to(device)
-                labels = temp.to(device)
+                inputs = inputs.to(device)
+                labels = labels.to(device)
 
                 # zero the parameter gradients
                 optimizer.zero_grad()
@@ -101,8 +99,8 @@ def train_model(dataloaders, model, criterion, optimizer, scheduler, num_epochs,
 
 
 # 网络
-# net_simple = model.SingleNet(args.n_input, args.n_hidden, args.n_output)
-# net_multiple = model.MultipleNet(args.n_input, args.n_hiddens, args.n_output)
+net_simple = model.SingleNet(args.n_input, args.n_hidden, args.n_output)
+net_multiple = model.MultipleNet(args.n_input, args.n_hiddens, args.n_output)
 # 优化器
 # opt_SGD = torch.optim.SGD(net.parameters(), lr=args.lr)  # SGD 就是随机梯度下降
 # opt_Momentum = torch.optim.SGD(net.parameters(), lr=args.lr, momentum=0.8) # momentum 动量加速,在SGD函数里指定momentum的值即可
@@ -117,8 +115,6 @@ loss_function_mse = torch.nn.MSELoss()  # 最小均方误差
 #cos优化器T_max Maximum number of iterations
 T_MAX = args.save_epoch
 STEPLR_STEP = args.save_epoch
-n_input = args.n_output
-n_output = args.n_input
 if __name__ == "__main__":
     plt.ion()   # interactive mode
     dataloaders = data_loader.get_dataloaders_train_val(
@@ -126,29 +122,29 @@ if __name__ == "__main__":
     criterion = torch.nn.MSELoss()
     # exec train
 
-    model_self = model.MultipleNet(n_input, args.n_hiddens, n_output).to(device)
+    model_self = model.MultipleNet(args.n_input, args.n_hiddens, args.n_output).to(device)
     opt = torch.optim.SGD(model_self.parameters(), lr=args.lr)
     scheduler = lr_scheduler.CosineAnnealingLR(opt, T_max=T_MAX)
     train_model(copy.deepcopy(dataloaders), model_self, criterion, opt,
-                            scheduler, args.num_epochs, args.save_epoch,'design1')
+                            scheduler, args.num_epochs, args.save_epoch,'model1')
 
-    model_self = model.MultipleNet(n_input, args.n_hiddens, n_output).to(device)
+    model_self = model.MultipleNet(args.n_input, args.n_hiddens, args.n_output).to(device)
     opt = torch.optim.Adam(model_self.parameters(), lr=args.lr)
     scheduler = lr_scheduler.CosineAnnealingLR(opt, T_max=T_MAX)
     train_model(copy.deepcopy(dataloaders), model_self, criterion, opt,
-                            scheduler, args.num_epochs, args.save_epoch,'design2') 
+                            scheduler, args.num_epochs, args.save_epoch,'model2') 
 
-    model_self = model.MultipleNet(n_input, args.n_hiddens, n_output).to(device)
+    model_self = model.MultipleNet(args.n_input, args.n_hiddens, args.n_output).to(device)
     opt = torch.optim.Adam(model_self.parameters(), lr=args.lr)
     scheduler = lr_scheduler.StepLR(opt, step_size=STEPLR_STEP, gamma=0.1)
     train_model(copy.deepcopy(dataloaders), model_self, criterion, opt,
-                            scheduler, args.num_epochs, args.save_epoch,'design3') 
+                            scheduler, args.num_epochs, args.save_epoch,'model3') 
 
-    model_self = model.MultipleNet(n_input, args.n_hiddens[::-1], n_output).to(device)
+    model_self = model.MultipleNet(args.n_input, [100, 200, 50], args.n_output).to(device)
     opt = torch.optim.Adam(model_self.parameters(), lr=args.lr)
     scheduler = lr_scheduler.StepLR(opt, step_size=STEPLR_STEP, gamma=0.1)
     train_model(copy.deepcopy(dataloaders), model_self, criterion, opt,
-                            scheduler, args.num_epochs, args.save_epoch,'design4') 
+                            scheduler, args.num_epochs, args.save_epoch,'model4') 
     
     ######################################################################
 
