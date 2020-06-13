@@ -8,16 +8,14 @@ import data_loader
 import copy
 import os
 import time
+import _thread
 
 # 参数配置
 args = config.args
 device = config.device
-#cos优化器T_max Maximum number of iterations
-T_MAX = args.save_epoch
-STEPLR_STEP = args.save_epoch
 
 
-def train_model(dataloaders, model, criterion, optimizer, scheduler, num_epochs, save_epoch):
+def train_model(dataloaders, model, criterion, optimizer, scheduler, num_epochs, save_epoch,save_name='model'):
     since = time.time()
 
     best_model_wts = copy.deepcopy(model.state_dict())
@@ -73,12 +71,12 @@ def train_model(dataloaders, model, criterion, optimizer, scheduler, num_epochs,
             if phase == 'val' and epoch_loss < best_loss:
                 best_loss = epoch_loss
                 best_model_wts = copy.deepcopy(model.state_dict())
-            
+                torch.save(model_self, os.path.join(os.path.dirname(__file__), 'pth/best/{}.pkl'.format(save_name)))
             
             if (epoch) % save_epoch == 0:
                 # 保存模型，此处判断保证保存一次，并且展示的loss是val的
                 if phase == 'val':
-                    torch.save( model.state_dict(), './pth/model{}-valLoss{}.pth'.format(epoch, epoch_loss))
+                    torch.save( model.state_dict(), './pth/{}{}-valLoss-{}.pth'.format(epoch,save_name, epoch_loss))
                 if not args.show_each_epoch:
                     if first:
                         print('\nEpoch {}/{}\n{}'.format(epoch, num_epochs, '-' * 10))
@@ -114,21 +112,40 @@ net_multiple = model.MultipleNet(args.n_input, args.n_hiddens, args.n_output)
 # 损失函数
 loss_function_mse = torch.nn.MSELoss()  # 最小均方误差
 
+#cos优化器T_max Maximum number of iterations
+T_MAX = args.save_epoch
+STEPLR_STEP = args.save_epoch
 if __name__ == "__main__":
     plt.ion()   # interactive mode
     dataloaders = data_loader.get_dataloaders_train_val(
         args.batch_size_train, args.batch_size_val)
-    model_self = net_multiple.to(device)
-    optimizer = torch.optim.SGD(model_self.parameters(), lr=args.lr)
-    lr_scheduler = lr_scheduler.CosineAnnealingLR(optimizer, T_max=T_MAX)
     criterion = torch.nn.MSELoss()
     # exec train
-    model_self = train_model(dataloaders, model_self, criterion, optimizer,
-                             lr_scheduler, args.num_epochs, args.save_epoch)
 
-    # save models
-    torch.save(model_self.state_dict(), os.path.join(
-        os.path.dirname(__file__), 'pth/best/model_self.pth'))
+    model_self = model.MultipleNet(args.n_input, args.n_hiddens, args.n_output).to(device)
+    opt = torch.optim.SGD(model_self.parameters(), lr=args.lr)
+    scheduler = lr_scheduler.CosineAnnealingLR(opt, T_max=T_MAX)
+    train_model(copy.deepcopy(dataloaders), model_self, criterion, opt,
+                            scheduler, args.num_epochs, args.save_epoch,'model1')
+
+    model_self = model.MultipleNet(args.n_input, args.n_hiddens, args.n_output).to(device)
+    opt = torch.optim.Adam(model_self.parameters(), lr=args.lr)
+    scheduler = lr_scheduler.CosineAnnealingLR(opt, T_max=T_MAX)
+    train_model(copy.deepcopy(dataloaders), model_self, criterion, opt,
+                            scheduler, args.num_epochs, args.save_epoch,'model2') 
+
+    model_self = model.MultipleNet(args.n_input, args.n_hiddens, args.n_output).to(device)
+    opt = torch.optim.Adam(model_self.parameters(), lr=args.lr)
+    scheduler = lr_scheduler.StepLR(opt, step_size=STEPLR_STEP, gamma=0.1)
+    train_model(copy.deepcopy(dataloaders), model_self, criterion, opt,
+                            scheduler, args.num_epochs, args.save_epoch,'model3') 
+
+    model_self = model.MultipleNet(args.n_input, [100, 200, 50], args.n_output).to(device)
+    opt = torch.optim.Adam(model_self.parameters(), lr=args.lr)
+    scheduler = lr_scheduler.StepLR(opt, step_size=STEPLR_STEP, gamma=0.1)
+    train_model(copy.deepcopy(dataloaders), model_self, criterion, opt,
+                            scheduler, args.num_epochs, args.save_epoch,'model4') 
+    
     ######################################################################
 
 
@@ -144,5 +161,5 @@ if __name__ == "__main__":
 
 
     
-    plt.ioff()
-    plt.show()
+    # plt.ioff()
+    # plt.show()
