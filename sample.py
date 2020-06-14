@@ -6,7 +6,7 @@ import os
 import model
 import config
 import data_loader
-
+from sklearn.metrics import r2_score
 
 def read_all_model_file(path):
     files = []
@@ -31,10 +31,11 @@ def predict_props(path,set='val'):
         loss = torch.nn.MSELoss() (prop, out)
         prop = prop.data.cpu().numpy()
         out = out.data.cpu().numpy()
-        R2 = 1-loss/np.var(prop)
+        # R2 = 1-loss/np.var(prop)
+        R2 = r2_score(prop,out)
         rmse = np.sqrt(loss.detach().numpy())
         print('loss:{:.4f} R2:{} File:{}'.format(loss,R2,pth))
-        plot_list.append([prop, out, config.color[i], 'RMSE:{:.4f}'.format(rmse)])
+        plot_list.append([prop, out, config.randomcolor(), 'RMSE:{:.4f},r2:{:.4f}'.format(rmse,R2)])
     plt.ion()
     plt.plot([20,120],[20,120])
     for param in plot_list: 
@@ -54,13 +55,13 @@ def predict_design(path,set='val'):
         compose,prop = data_loader.data_read(set)
         out = model(prop)
         loss = torch.nn.MSELoss() (compose, out)
-        prop = prop.data.cpu().numpy()
         compose = compose.data.cpu().numpy()
         out = out.data.cpu().numpy()
-        R2 = 1-loss/np.var(compose)
+        # R2 = 1-loss/np.var(compose)
+        R2 = r2_score(compose, out)
         rmse = np.sqrt(loss.detach().numpy())
         print('loss:{:.4f} R2:{} File:{}'.format(loss,R2,pth))
-        plot_list.append([compose, out, config.color[i], 'RMSE:{:.4f}'.format(rmse)])
+        plot_list.append([compose, out, config.randomcolor(), 'RMSE:{:.4f},R2:{:.4F}'.format(rmse,R2)])
     plt.ion()
     plt.plot([20,120],[20,120])
     for param in plot_list: 
@@ -72,7 +73,6 @@ def predict_design(path,set='val'):
 
 if __name__ == '__main__':
     prediction_type = 2 # 1:性能预测，2:组成预测
-    pth_path = 'pth'
     if prediction_type==1:
         predict_props('pkl/props')
     elif prediction_type==2:
