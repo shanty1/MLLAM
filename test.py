@@ -14,8 +14,14 @@ def pl():
     plt.ioff()
     plt.show()
 
+def bar_figure():
+    x = [1,2,3,4,5]
+    y = [76,36,97,88,67]
+    plt.bar(x,y)
+    plt.show()
+
 
 if __name__ == '__main__':
     
-    pl()
+    bar_figure()
   

@@ -23,13 +23,14 @@ def read_all_model_file(path):
 def predict_props(path,set='val'):
     model_list = read_all_model_file(path)
     plot_list = []
+    x_compose,y_prop = data_loader.data_read(set)
+    prop = y_prop.data.cpu().numpy()
+    criterion = torch.nn.MSELoss()
     for i,pth in enumerate(model_list):
         model = torch.load(pth, map_location=torch.device('cpu'))
         model.eval() 
-        compose,prop = data_loader.data_read(set)
-        out = model(compose)
-        loss = torch.nn.MSELoss() (prop, out)
-        prop = prop.data.cpu().numpy()
+        out = model(x_compose)
+        loss = criterion(y_prop, out)
         out = out.data.cpu().numpy()
         # R2 = 1-loss/np.var(prop)
         R2 = r2_score(prop,out)
@@ -37,7 +38,6 @@ def predict_props(path,set='val'):
         print('loss:{:.4f} R2:{} File:{}'.format(loss,R2,pth))
         plot_list.append([prop, out, config.randomcolor(), 'RMSE:{:.4f},r2:{:.4f}'.format(rmse,R2)])
     plt.ion()
-    plt.plot([20,120],[20,120])
     for param in plot_list: 
         plt.scatter(param[0], param[1], color=param[2], label=param[3])
         plt.pause(0.5)
@@ -49,13 +49,14 @@ def predict_props(path,set='val'):
 def predict_design(path,set='val'):
     model_list = read_all_model_file(path)
     plot_list = []
+    y_compose,x_prop = data_loader.data_read(set)
+    criterion = torch.nn.MSELoss()
     for i,pth in enumerate(model_list):
         model = torch.load(pth, map_location=torch.device('cpu'))
         model.eval() 
-        compose,prop = data_loader.data_read(set)
-        out = model(prop)
-        loss = torch.nn.MSELoss() (compose, out)
-        compose = compose.data.cpu().numpy()
+        out = model(x_prop)
+        loss = criterion(y_compose, out)
+        compose = y_compose.data.cpu().numpy()
         out = out.data.cpu().numpy()
         # R2 = 1-loss/np.var(compose)
         R2 = r2_score(compose, out)
@@ -63,7 +64,6 @@ def predict_design(path,set='val'):
         print('loss:{:.4f} R2:{} File:{}'.format(loss,R2,pth))
         plot_list.append([compose, out, config.randomcolor(), 'RMSE:{:.4f},R2:{:.4F}'.format(rmse,R2)])
     plt.ion()
-    plt.plot([20,120],[20,120])
     for param in plot_list: 
         plt.scatter(param[0], param[1], color=param[2], label=param[3])
         plt.pause(0.5)
@@ -72,7 +72,7 @@ def predict_design(path,set='val'):
     plt.show()
 
 if __name__ == '__main__':
-    prediction_type = 2 # 1:性能预测，2:组成预测
+    prediction_type = 1 # 1:性能预测，2:组成预测
     if prediction_type==1:
         predict_props('pkl/props')
     elif prediction_type==2:
