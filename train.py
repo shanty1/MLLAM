@@ -207,6 +207,6 @@ if __name__ == "__main__":
     train_model(dataloaders, model_self, criterion, opt,
                 scheduler, args.num_epochs, args.save_epoch, 'model5', './pkl/design/')
 
-
+ 
 
 
