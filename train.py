@@ -122,49 +122,56 @@ T_MAX = args.save_epoch
 STEPLR_STEP = args.save_epoch
 T_MAX = 200
 STEPLR_STEP = 200
-if __name__ == "__main__":
 
-    dataloaders = data_loader.get_dataloaders_train_val(args.batch_size_train, args.batch_size_val)
+
+def train_props():
+    dataloaders = data_loader.get_dataloaders_train_val(
+        args.batch_size_train, args.batch_size_val)
     criterion = torch.nn.MSELoss()
 
     # exec train props
-    n_input,n_output = args.n_input,args.n_output
+    n_input, n_output = args.n_input, args.n_output
 
-    model_self = model.MultipleNet(n_input,   [500,200], n_output).to(device)
-    opt = torch.optim.Adam(model_self.parameters(), lr=args.lr)
+    model_self = model.MultipleNet(n_input,   [500, 200], n_output).to(device)
+    opt = torch.optim.SGD(model_self.parameters(), lr=args.lr)
     train_model(dataloaders, model_self, criterion, opt,
                 None, args.num_epochs, args.save_epoch, 'model1', './pkl/props/')
 
-    model_self = model.MultipleNet(n_input,   [500,200], n_output).to(device)
+    model_self = model.MultipleNet(n_input,   [500, 200], n_output).to(device)
     opt = torch.optim.Adam(model_self.parameters(), lr=args.lr)
     scheduler = lr_scheduler.CosineAnnealingLR(opt, T_max=T_MAX)
     train_model(dataloaders, model_self, criterion, opt,
                 scheduler, args.num_epochs, args.save_epoch, 'model2', './pkl/props/')
-                            
-    model_self = model.MultipleNet(n_input,  [500,200], n_output).to(device)
+
+    model_self = model.MultipleNet(n_input,  [500, 200], n_output).to(device)
     opt = torch.optim.SGD(model_self.parameters(), lr=args.lr, momentum=0.8)
     scheduler = lr_scheduler.CosineAnnealingLR(opt, T_max=T_MAX)
     train_model(dataloaders, model_self, criterion, opt,
                 scheduler, args.num_epochs, args.save_epoch, 'model3', './pkl/props/')
-    
-    model_self = model.MultipleNet(n_input,  [200,500,200], n_output).to(device)
+
+    model_self = model.MultipleNet(
+        n_input,  [200, 500, 200], n_output).to(device)
     opt = torch.optim.SGD(model_self.parameters(), lr=args.lr, momentum=0.8)
     scheduler = lr_scheduler.CosineAnnealingLR(opt, T_max=T_MAX)
     train_model(dataloaders, model_self, criterion, opt,
                 scheduler, args.num_epochs, args.save_epoch, 'model4', './pkl/props/')
-    
-    model_self = model.MultipleNet(n_input,  [200,500,200], n_output).to(device)
+
+    model_self = model.MultipleNet(
+        n_input,  [200, 500, 200], n_output).to(device)
     opt = torch.optim.SGD(model_self.parameters(), lr=args.lr, momentum=0.8)
     scheduler = lr_scheduler.ReduceLROnPlateau(opt)
     train_model(dataloaders, model_self, criterion, opt,
                 scheduler, args.num_epochs, args.save_epoch, 'model5', './pkl/props/')
-   
-    model_self = model.MultipleNet(n_input,  [200,500,200], n_output).to(device)
+
+    model_self = model.MultipleNet(
+        n_input,  [200, 500, 200], n_output).to(device)
     opt = torch.optim.Adam(model_self.parameters(), lr=args.lr)
     scheduler = lr_scheduler.ReduceLROnPlateau(opt)
     train_model(dataloaders, model_self, criterion, opt,
                 scheduler, args.num_epochs, args.save_epoch, 'model5', './pkl/props/')
 
+def train_design():
+    
     ######################################################################
     # exec train design
     n_input, n_output = args.n_output, args.n_input
@@ -207,6 +214,8 @@ if __name__ == "__main__":
     train_model(dataloaders, model_self, criterion, opt,
                 scheduler, args.num_epochs, args.save_epoch, 'model5', './pkl/design/')
 
- 
 
+if __name__ == "__main__":
 
+    train_props()
+    train_design()
