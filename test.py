@@ -26,3 +26,4 @@ if __name__ == '__main__':
     bar_figure()
   
 #我是笔记本啊
+#2070
