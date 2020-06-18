@@ -175,7 +175,7 @@ def train_design():
     ######################################################################
     # exec train design
     n_input, n_output = args.n_output, args.n_input
-
+    criterion = torch.nn.MSELoss()
     dataloaders = data_loader.get_dataloaders_train_val(args.batch_size_train, args.batch_size_val,True)
 
     model_self = model.MultipleNet(n_input, [200, 500, 200,100], n_output).to(device)
