@@ -30,13 +30,14 @@ def get_loader(batch_size,name="train",desc=False):
         x,y = data_read(name)
     torch_dataset = torch.utils.data.TensorDataset(x,y)
     data_loader = torch.utils.data.DataLoader(
-        dataset=torch_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
+        dataset=torch_dataset, batch_size=batch_size, shuffle=True, num_workers=8)
     return data_loader
 
 
 
-def get_dataloaders_train_val(batch_size_for_train, batch_size_for_val, desc=False):
+def get_dataloaders_train_val(file_name, batch_size_for_train, batch_size_for_val, desc=False):
     return {
-        'train': get_loader(batch_size_for_train, 'train', desc),
-        'val': get_loader(batch_size_for_val, 'val', desc)
+        'train': get_loader(batch_size_for_train, file_name, desc),
+        # 无测试数据，暂时用训练集代替
+        'val': get_loader(batch_size_for_val, file_name, desc)
     }

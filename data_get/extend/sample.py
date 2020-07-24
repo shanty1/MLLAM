@@ -46,6 +46,16 @@ def predict_props(path,set='val'):
     plt.show()
 
 
+def print_props(modelfilepath,filename):
+    model = torch.load(modelfilepath, map_location=torch.device('cpu'))
+    x_compose,_ = data_loader.data_read(filename)
+    model.eval() 
+    out = model(x_compose)
+    out = out.data.cpu().numpy()
+    for item in out:
+        print(item[0])
+        
+    
 def predict_design(path,set='val'):
     model_list = read_all_model_file(path)
     plot_list = []
@@ -72,8 +82,10 @@ def predict_design(path,set='val'):
     plt.show()
 
 if __name__ == '__main__':
-    prediction_type = 1 # 1:性能预测，2:组成预测
+    prediction_type = 3 # 1:性能预测，2:组成预测
     if prediction_type==1:
         predict_props('pkl/props')
     elif prediction_type==2:
         predict_design('pkl/design')
+    else:
+        print_props('pkl/props/niandu_43-trainLoss_0.0337-valLoss_0.0215.pkl','test_niandu')

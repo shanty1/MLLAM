@@ -20,6 +20,7 @@ def read_all_model_file(path):
             files.append(file)
     return files
 
+R2s=[]
 def predict_props(path,set='val'):
     model_list = read_all_model_file(path)
     plot_list = []
@@ -34,6 +35,7 @@ def predict_props(path,set='val'):
         out = out.data.cpu().numpy()
         # R2 = 1-loss/np.var(prop)
         R2 = r2_score(prop,out)
+        R2s.append(R2)
         rmse = np.sqrt(loss.detach().numpy())
         print('loss:{:.4f} R2:{} File:{}'.format(loss,R2,pth))
         plot_list.append([prop, out, config.randomcolor(), 'RMSE:{:.4f},r2:{:.4f}'.format(rmse,R2)])
@@ -75,5 +77,6 @@ if __name__ == '__main__':
     prediction_type = 1 # 1:性能预测，2:组成预测
     if prediction_type==1:
         predict_props('pkl/props')
+        print('bestR2:{}'.format(max(R2s)))
     elif prediction_type==2:
         predict_design('pkl/design')

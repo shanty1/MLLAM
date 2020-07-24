@@ -36,8 +36,9 @@ class MultipleNet(nn.Module):
         layers = []
         for x in n_hiddens:
             layers += [nn.Linear(in_dim, x),
-                       nn.BatchNorm1d(x),
+                    #    nn.BatchNorm1d(x),
                        nn.Dropout(0.1),
-                       nn.ReLU(inplace=True)]
+                       nn.ReLU(inplace=True)
+                       ]
             in_dim = x
         return nn.Sequential(*layers)

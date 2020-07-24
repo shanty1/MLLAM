@@ -56,7 +56,7 @@ def saveToMain():
     '''
     临时处理，空值属性设为0
     '''
-    for row in sheet.iter_rows(min_row=2,min_col=column_index_from_string('B'),max_col=column_index_from_string('AH')):
+    for row in sheet.iter_rows(min_row=2,min_col=column_index_from_string('B'),max_col=column_index_from_string('N')):
         if row[0].value is None or row[0].value == '':
             continue
         else:
